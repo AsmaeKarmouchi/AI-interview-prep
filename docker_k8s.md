@@ -25,3 +25,4 @@ Un pod est l'unité de base de déploiement dans Kubernetes, regroupant un ou pl
 
 **Q: How to deploy an LLM in Kubernetes?**  
 - Build Docker image → push to registry → define K8s deployment (YAML) → expose via service/ingress.
+![alt text](image.png)
