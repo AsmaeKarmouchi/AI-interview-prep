@@ -268,6 +268,7 @@ with torch.no_grad():
 
 
 
+
 ## LoRA (Low-Rank Adaptation)
 
 Permet de finetuner seulement une petite partie du modèle en insérant des matrices de faible rang dans certaines couches (souvent les poids des projections dans l’attention).
@@ -318,3 +319,132 @@ with torch.no_grad():
     outputs = model.generate(tokenizer("Fine-tuning ", return_tensors="pt")["input_ids"], max_length=20)
     print(tokenizer.decode(outputs[0]))
 ```
+
+---
+
+## Évaluation de modèle et choix des métriques
+
+L'évaluation d'un modèle est essentielle pour mesurer sa performance et guider son amélioration. Le choix des métriques dépend du type de tâche :
+
+### Tâche de classification
+- **Accuracy** : proportion de bonnes prédictions
+- **Précision** : capacité à ne pas prédire de faux positifs
+- **Rappel (Recall)** : capacité à retrouver tous les vrais positifs
+- **F1-score** : moyenne harmonique précision/rappel
+- **Courbe ROC-AUC** : performance globale sur tous les seuils
+
+### Tâche de régression
+- **MSE (Mean Squared Error)** : erreur quadratique moyenne
+- **MAE (Mean Absolute Error)** : erreur absolue moyenne
+- **R² (coefficient de détermination)** : proportion de variance expliquée
+
+### Tâche de NLP (génération, traduction)
+- **BLEU, ROUGE, METEOR** : métriques de similarité entre texte généré et référence
+
+### Exemple de code : calcul de métriques en classification
+```python
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+y_true = [0, 1, 1, 0, 1]
+y_pred = [0, 1, 0, 0, 1]
+
+print("Accuracy:", accuracy_score(y_true, y_pred))
+print("Précision:", precision_score(y_true, y_pred))
+print("Rappel:", recall_score(y_true, y_pred))
+print("F1-score:", f1_score(y_true, y_pred))
+```
+
+---
+
+
+## Expressions mathématiques des principales métriques
+
+### Classification
+- **Accuracy** :
+  $$ Accuracy = \frac{TP + TN}{TP + TN + FP + FN} $$
+  TP = vrais positifs, TN = vrais négatifs, FP = faux positifs, FN = faux négatifs
+
+- **Précision** :
+  $$ Precision = \frac{TP}{TP + FP} $$
+
+- **Rappel (Recall)** :
+  $$ Recall = \frac{TP}{TP + FN} $$
+
+- **F1-score** :
+  $$ F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall} $$
+
+### Régression
+- **MSE (Mean Squared Error)** :
+  $$ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+
+- **MAE (Mean Absolute Error)** :
+  $$ MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i| $$
+
+- **R² (coefficient de détermination)** :
+  $$ R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2} $$
+
+### NLP (exemple BLEU)
+- **BLEU** :
+  $$ BLEU = BP \times \exp\left(\sum_{n=1}^{N} w_n \log p_n\right) $$
+  où BP = brevity penalty, $p_n$ = précision n-gram, $w_n$ = poids
+
+---
+
+
+---
+
+## Notions complémentaires
+
+### Training data, validation data, testing data
+- **Training data** : données utilisées pour entraîner le modèle (ajustement des poids)
+- **Validation data** : données utilisées pour ajuster les hyperparamètres et détecter l'overfitting (jamais vues pendant l'entraînement)
+- **Testing data** : données totalement séparées, utilisées pour évaluer la performance finale du modèle
+
+### Batch Gradient Descent, Mini-Batch, Stochastic
+- **Batch Gradient Descent** : utilise tout le dataset pour chaque mise à jour des poids. Stable mais lent pour grands datasets.
+- **Stochastic Gradient Descent (SGD)** : met à jour les poids pour chaque exemple. Rapide, bruité, peut sortir des minima locaux.
+- **Mini-Batch Gradient Descent** : compromis, met à jour les poids après chaque petit lot (batch) d'exemples. Plus courant en pratique.
+
+**Choix** :
+- Utiliser SGD pour petits datasets ou pour explorer l'espace de solutions
+- Mini-batch pour la plupart des cas (efficace, compatible GPU)
+- Batch pour petits datasets ou analyse théorique
+
+### Minima locaux et globaux dans les fonctions de perte non-convexes
+La plupart des fonctions de perte en deep learning sont non-convexes (nombreux minima locaux).
+- **Global minimum** : point où la perte est la plus basse possible
+- **Local minimum** : point où la perte est plus basse que les voisins, mais pas forcément la plus basse globale
+
+
+---
+
+## Normalisation et Feature Scaling
+
+La normalisation et le feature scaling sont des étapes clés pour améliorer la convergence et la performance des modèles de machine learning et deep learning.
+
+### Pourquoi ?
+- Les variables d'entrée (features) peuvent avoir des échelles très différentes
+- Les algorithmes de gradient descent convergent plus vite si les données sont sur des échelles similaires
+- Évite que certaines features dominent l'apprentissage
+
+### Méthodes principales
+- **Min-Max Scaling (normalisation)** : ramène les valeurs dans un intervalle [0, 1]
+  $$ x_{norm} = \frac{x - x_{min}}{x_{max} - x_{min}} $$
+
+- **Standardisation (Z-score scaling)** : centre les données autour de 0 et les met à l'échelle de l'écart-type
+  $$ x_{std} = \frac{x - \mu}{\sigma} $$
+  où $\mu$ = moyenne, $\sigma$ = écart-type
+
+- **Robust Scaling** : utilise la médiane et l'écart interquartile, moins sensible aux outliers
+  $$ x_{robust} = \frac{x - \text{médiane}}{IQR} $$
+
+### Exemple en Python
+```python
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+X = [[1], [2], [3], [4], [5]]
+print("MinMax:", MinMaxScaler().fit_transform(X))
+print("Standard:", StandardScaler().fit_transform(X))
+```
+
+---
