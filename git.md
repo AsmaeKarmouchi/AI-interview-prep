@@ -1,3 +1,4 @@
+```bash
 git clone <url_du_depot>
 git status
 git add <nom_du_fichier>
@@ -25,6 +26,7 @@ git show <id_commit>
 git rm --cached <fichier>
 git rm <fichier>
 git reset --hard HEAD~1
+```
 
 # Git, GitHub, GitLab, CI/CD - Q/A
 
