@@ -9,10 +9,14 @@ Docker permet de créer des conteneurs pour isoler et déployer des applications
 
 ### Q2: Différence entre VM et conteneur ?
 **Réponse:**
-VM : virtualise tout un OS, plus lourd. Conteneur : partage le noyau, plus léger et rapide.
+VM : virtualise tout un OS, plus lourd. 
+Conteneur : partage le noyau de l’OS hôte et n’isole que les processus, plus léger et rapide.
+### Q2b : Quelle est la différence entre une image et un conteneur ?
+**Réponse:**
+- Une image est un modèle en lecture seule, une sorte de "plan" (template).
+- Un conteneur est une instance en cours d’exécution de cette image.
 
-
-### Q3b: Quels sont les composants principaux d'un Dockerfile ?
+### Q3: Quels sont les composants principaux d'un Dockerfile ?
 **Réponse:**
 - `FROM` : image de base
 - `RUN` : exécute des commandes (installation de paquets, etc.)
@@ -21,10 +25,26 @@ VM : virtualise tout un OS, plus lourd. Conteneur : partage le noyau, plus lége
 - `EXPOSE` : expose un port
 - `ENV` : définit des variables d'environnement
 - `WORKDIR` : définit le répertoire de travail
+pour construire une image Docker automatiquement.
 
 ### Q4: Qu'est-ce qu'un volume dans Docker ?
 **Réponse:**
 Un volume permet de persister les données générées par un conteneur, même après son arrêt ou suppression.
+
+### Commandes et pratique
+ Quelle est la différence entre docker run, docker start et docker exec ?
+
+- docker run → crée et démarre un nouveau conteneur à partir d’une image.
+- docker start → démarre un conteneur existant (arrêté).
+- docker exec → exécute une commande dans un conteneur déjà en cours d’exécution.
+- Conteneurs actifs : docker ps
+- Tous les conteneurs : docker ps -a
+- Images locales : docker images
+- Supprimer un conteneur : docker rm <id>
+- Supprimer une image : docker rmi <id>
+- Comment persister les données dans Docker ?
+- - Volumes (docker volume create) → stockage géré par Docker.
+- - Bind mounts → montage direct d’un dossier de l’hôte dans le conteneur.
 
 ### Q5: Qu'est-ce qu'un multistage build dans Docker ?
 **Réponse:**
@@ -34,9 +54,34 @@ Un multistage build permet de créer des images Docker optimisées en utilisant 
 **Réponse:**
 L'option `-p` (publish) permet de mapper un port du conteneur vers un port de la machine hôte. Exemple : `docker run -p 8080:80` expose le port 80 du conteneur sur le port 8080 de l'hôte.
 
-### Q7: Why Docker in ML/AI?
-**Réponse:**
-Ensures reproducibility, consistency, easy deployment of models.
+### Qu’est-ce que Docker Compose ?
+ Outil permettant de définir et gérer des applications multi-conteneurs avec un fichier docker-compose.yml. On y définit les services, volumes, réseaux, etc.
+ 
+### Quels sont les types de réseaux Docker ?
+- bridge (par défaut) → conteneurs communiquent via NAT.
+- host → conteneur partage le réseau de l’hôte.
+- overlay → pour les clusters Docker Swarm.
+- macvlan → chaque conteneur a sa propre adresse MAC.
+
+### Vous êtes en charge de l’environnement Docker de l’entreprise et vous remarquez de nombreux conteneurs arrêtés et réseaux inutilisés qui prennent de la place. Que faites-vous ?
+ Je nettoie l’environnement en utilisant :
+- docker container prune pour supprimer les conteneurs arrêtés.
+- docker network prune pour supprimer les réseaux inutilisés.
+- docker image prune -a pour supprimer les images inutilisées.
+Cela permet de libérer de l’espace disque et de garder un environnement sain.
+
+### Comment gérez-vous le stockage persistant dans Docker ?
+- Volumes (solution recommandée, gérés par Docker).
+- Bind mounts (montage d’un répertoire de l’hôte).
+Cela permet de conserver les données même si le conteneur est supprimé.
+
+### Une entreprise veut créer des milliers de conteneurs. Existe-t-il une limite au nombre de conteneurs que Docker peut exécuter ?
+Docker n’impose pas de limite stricte. Le vrai facteur limitant est la capacité matérielle (CPU, RAM, I/O). Plus le serveur est puissant, plus on peut exécuter de conteneurs.
+
+### Comment limiter l’utilisation CPU et mémoire d’un conteneur ?
+
+docker run --cpus=2 --memory=1g mycontainer
+Cela limite le conteneur à 2 CPU et 1 Go de RAM.
 
 ---
 
