@@ -1,9 +1,12 @@
+# Deep Learning - Concepts et Pratique (Forward/Backward, RNN, CNN, Transformers, Finetuning)
 
-# Propagation avant (Forward Pass)
+---
 
-Les données d’entrée traversent successivement les couches du réseau.
+## Propagation avant (Forward Pass)
 
-Chaque neurone calcule : somme pondérée + biais → fonction d’activation (ReLU, sigmoïde, etc.) pour introduire une non-linéarité dans le modèle.
+- Les données d’entrée traversent successivement les couches du réseau.
+
+- Chaque neurone calcule : somme pondérée + biais → fonction d’activation (ReLU, sigmoïde, etc.) pour introduire une non-linéarité dans le modèle.
 
 La couche de sortie (Output Layer) produit la prédiction finale :
 - **Classification** → probabilités (Softmax)
@@ -12,22 +15,67 @@ La couche de sortie (Output Layer) produit la prédiction finale :
 > Sert à transformer les données brutes en prédictions.
 
 
-# Propagation arrière (Backward Pass / Backpropagation)
+## Propagation arrière (Backward Pass / Backpropagation)
 
 1. Compare la prédiction à la valeur réelle via une fonction de perte.
 2. Calcule les gradients (dérivées partielles de la perte par rapport aux poids). Ce gradient indique la contribution de chaque paramètre à l'erreur.
 3. Met à jour les paramètres grâce à un optimiseur (ex. SGD, Adam).
 4. Répété sur plusieurs époques → le réseau apprend en réduisant l’erreur.
 
-> C’est la phase d’apprentissage.
+> C’est la phase d’apprentissage en réduisant l’erreur.
 
 
-# Pourquoi c’est important ?
+### Pourquoi c’est important ?
 
 - **Optimisation continue** : Forward = prédiction, Backward = correction.
 - **Amélioration des performances** : les mises à jour itératives réduisent l’erreur.
 - **Résolution de problèmes complexes** : les couches cachées + non-linéarités capturent des motifs difficiles.
 - **Base de l’IA moderne** : fondement du deep learning, des LLM, de la vision par ordinateur, etc.
+
+
+## Training Loop (Boucle d’entraînement)
+
+Étapes répétées pendant plusieurs epochs :
+
+1. Forward pass → prédictions
+2. Calcul de la loss
+3. Backward pass → calcul des gradients
+4. Optimizer.step() → mise à jour des poids
+
+```python
+for epoch in range(epochs):
+    y_pred = model(x)
+    loss = loss_fn(y_pred, y)
+    optimizer.zero_grad() #réinitialise les gradients à zéro avant le calcul du backward
+    loss.backward()
+    optimizer.step()
+```
+
+## Hyperparamètres
+
+Paramètres fixés avant l’entraînement :
+
+- **Learning rate** : vitesse d’apprentissage
+- **Batch size** : nombre d’exemples vus avant une mise à jour des poids
+- **Nombre d’epochs** : combien de fois l’ensemble des données est vu
+- **Architecture du modèle** (profondeur, largeur) : nombre de couches, neurones, type d’activations
+- **Optimizer choisi**
+Ont un impact majeur sur les performances.
+
+> Leur tuning = étape clé pour un bon modèle.
+
+## PyTorch (torch)
+- Framework populaire Deep Learning.
+
+- Modules clés :
+
+- - torch.nn → construire des réseaux
+
+- - torch.optim → optimiseurs
+
+- - torch.utils.data → datasets / dataloaders
+
+- - autograd → calcul automatique de gradients
 
 
 ## Exemple en PyTorch
@@ -69,41 +117,24 @@ with torch.no_grad():                       # pas besoin de calculer les gradien
 
 
 
-## Training Loop (Boucle d’entraînement)
-
-Étapes répétées pendant plusieurs epochs :
-
-1. Forward pass → prédictions
-2. Calcul de la loss
-3. Backward pass → calcul des gradients
-4. Optimizer.step() → mise à jour des poids
-
-```python
-for epoch in range(epochs):
-    y_pred = model(x)
-    loss = loss_fn(y_pred, y)
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-```
 
 
-## Hyperparamètres
+##  Optimisation et Loss
 
-Paramètres fixés avant l’entraînement :
+### Fonctions de perte
+- **Classification** : Cross-Entropy
+- **Régression** : MSE, MAE
+- **NLP** : Categorical Cross-Entropy / KL Divergence
 
-- **Learning rate** : vitesse d’apprentissage
-- **Batch size** : nombre d’exemples vus avant une mise à jour des poids
-- **Nombre d’epochs** : combien de fois l’ensemble des données est vu
-- **Architecture du modèle** (profondeur, largeur) : nombre de couches, neurones, type d’activations
+### Optimiseurs
+- **SGD** : descente de gradient stochastique
+- **Momentum** : accélère convergence
+- **Adam / RMSProp** : adaptatif, couramment utilisé
 
-Ont un impact majeur sur les performances.
-
-> Leur tuning = étape clé pour un bon modèle.
-
-
-
-
+### Gradient Descent
+- Batch, Mini-Batch, Stochastic
+- Problèmes : vanishing / exploding gradients
+- Techniques : gradient clipping, initialization (Xavier, He)
 
 ## Batch Normalization
 
@@ -122,17 +153,27 @@ nn.Sequential(
 )
 ```
 
-
 ## Overfitting / Underfitting
 
-- **Overfitting** : modèle trop complexe, apprend par cœur, généralise mal
+- **Overfitting** : modèle trop complexe, apprend par cœur  → généralise mal
 - **Underfitting** : modèle trop simple, n’apprend pas assez
 
 > On vise le juste milieu (bon sur entraînement et validation). Objectif : équilibre entre biais et variance.
 
+## Perceptron
+- Neurone simple
+- Somme pondérée + biais → activation
+- Limitation : ne résout pas les problèmes non linéaires (XOR)
 
+## MLP (Multi-Layer Perceptron)
+- Couches entièrement connectées
+- Fonction d’activation non-linéaire (ReLU, Sigmoid, Tanh)
+- Forward pass : calcul des prédictions
+- Backward pass : calcul des gradients via backpropagation
 
-## MLP (Perceptron multicouche)
+### Formules
+- Activation neuronale :  
+  $$ a = f(\sum_i w_i x_i + b) $$
 
 Un réseau de neurones feedforward composé de plusieurs couches entièrement connectées (fully connected layers) :
 - Une couche d’entrée (features)
@@ -151,9 +192,13 @@ mlp = nn.Sequential(
 
 lstm = nn.LSTM(input_size=5, hidden_size=10, batch_first=True)
 
+
+
+
 ## RNN / LSTM / GRU (Séquences)
 
 ### RNN (Recurrent Neural Network)
+- Traite les séquences, mémorise les étapes précédentes
 - Réseau conçu pour traiter des séquences de données (texte, séries temporelles, audio)
 - Les neurones ont des connexions récurrentes qui gardent une mémoire des étapes précédentes
 - Les RNN classiques souffrent du vanishing / exploding gradient (perte de mémoire sur les longues séquences)
@@ -185,10 +230,12 @@ cnn = nn.Sequential(
 ```
 
 ## Transformers = NLP + vision moderne
+- Base des modèles NLP modernes et vision (BERT, GPT)
 
-## Régularisation + BatchNorm
+- Utilisent l’attention pour capturer les dépendances globales
 
-### Régularisation
+
+### Régularisation et Dropout
 Techniques pour éviter l’overfitting :
 - **Dropout** : désactive aléatoirement certains neurones
 - **L1 / L2 regularization** : pénalise les grands poids
@@ -219,10 +266,9 @@ import torch.optim as optim
 from transformers import BertForSequenceClassification, BertTokenizer
 
 # 1. Charger le modèle et le tokenizer
-model_name = "bert-base-uncased"
-num_classes = 3
-tokenizer = BertTokenizer.from_pretrained(model_name)
-model = BertForSequenceClassification.from_pretrained(model_name, num_labels=num_classes)
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
+
 
 # 2. Gel des couches de base (toutes sauf la classification)
 for param in model.bert.parameters():
@@ -250,7 +296,7 @@ model.train()
 for epoch in range(3):  # 3 epochs pour l'exemple
     for batch in dataloader:
         input_ids, attention_mask, labels_batch = batch
-        optimizer.zero_grad()
+        optimizer.zero_grad() #réinitialise les gradients à zéro avant le calcul du backward.
         outputs = model(input_ids=input_ids, attention_mask=attention_mask)
         loss = criterion(outputs.logits, labels_batch)
         loss.backward()
@@ -259,7 +305,7 @@ for epoch in range(3):  # 3 epochs pour l'exemple
 
 # 6. Évaluation simple
 model.eval()
-with torch.no_grad():
+with torch.no_grad(): #désactiver le calcul automatique des gradients (en prédiction ou évaluation).
     outputs = model(input_ids=input_ids, attention_mask=attention_mask)
     predictions = torch.argmax(outputs.logits, dim=1)
     print("Predictions:", predictions.tolist())
@@ -267,11 +313,11 @@ with torch.no_grad():
 
 
 
-
-
 ## LoRA (Low-Rank Adaptation)
 
-Permet de finetuner seulement une petite partie du modèle en insérant des matrices de faible rang dans certaines couches (souvent les poids des projections dans l’attention).
+- Permet d’adapter uniquement des matrices de faible rang
+- Réduit le coût mémoire du finetuning
+- Permet de finetuner seulement une petite partie du modèle en insérant des matrices de faible rang dans certaines couches (souvent les poids des projections dans l’attention).
 
 ```python
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -325,6 +371,17 @@ with torch.no_grad():
 ## Évaluation de modèle et choix des métriques
 
 L'évaluation d'un modèle est essentielle pour mesurer sa performance et guider son amélioration. Le choix des métriques dépend du type de tâche :
+- Classification
+
+- - Accuracy, Precision, Recall, F1-score, ROC-AUC
+
+- Régression
+
+- - MSE, MAE, R²
+
+- NLP
+
+- - BLEU, ROUGE, METEOR
 
 ### Tâche de classification
 - **Accuracy** : proportion de bonnes prédictions
@@ -358,7 +415,7 @@ print("F1-score:", f1_score(y_true, y_pred))
 
 
 ## Expressions mathématiques des principales métriques
-
+![alt text](image-1.png)
 ### Classification
 - **Accuracy** :
   $$ Accuracy = \frac{TP + TN}{TP + TN + FP + FN} $$
@@ -428,6 +485,7 @@ La normalisation et le feature scaling sont des étapes clés pour améliorer la
 - Évite que certaines features dominent l'apprentissage
 
 ### Méthodes principales
+![alt text](image-2.png)
 - **Min-Max Scaling (normalisation)** : ramène les valeurs dans un intervalle [0, 1]
   $$ x_{norm} = \frac{x - x_{min}}{x_{max} - x_{min}} $$
 
