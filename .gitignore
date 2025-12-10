@@ -1,0 +1,4 @@
+test.txt
+dest.txt
+__pycache__/
+*.log
