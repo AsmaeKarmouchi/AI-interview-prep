@@ -215,7 +215,7 @@ Chatbots, assistants virtuels, génération de rapports, recherche documentaire,
 **Q: What is RAG (Retrieval-Augmented Generation)?**  
 - Combines retrieval (fetch knowledge from database) + generation (LLM creates response).  
 - Helps reduce hallucinations.
-
+![alt text](image-7.png)
 **Q: What is Fine-tuning in LLMs?**  
 - Process of adapting a pre-trained model to a domain/task.  
 - Techniques: Full fine-tuning, LoRA, PEFT, instruction tuning, RLHF.
@@ -225,3 +225,4 @@ Chatbots, assistants virtuels, génération de rapports, recherche documentaire,
 - Image: FID, IS.  
 - Human feedback increasingly important.
 ---
+
